@@ -100,8 +100,8 @@ func TestHTTPClient(t *testing.T) {
 }
 
 func TestHTTPClientBufferedStream(t *testing.T) {
-	// bodysize has a size big enought to make the resopnse.Body not an instant read
-	// so if the response is cancelled it wount be all readed and the test would fail
+	// bodysize has a size big enough to make the response.Body not an instant read
+	// so if the response is cancelled it wound be all readed and the test would fail
 	// The 6000 has not a particular meaning, it big enough to fulfill the usecase.
 	const bodysize = 6000
 	var (
