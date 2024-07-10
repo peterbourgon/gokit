@@ -3,6 +3,7 @@ package http_test
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -332,30 +333,38 @@ func TestAddMultipleHeadersErrorEncoder(t *testing.T) {
 	}
 }
 
-type noContentResponse struct{}
+type noBodyResponse struct{ Code int }
 
-func (e noContentResponse) StatusCode() int { return http.StatusNoContent }
+func (e noBodyResponse) StatusCode() int { return e.Code }
 
-func TestEncodeNoContent(t *testing.T) {
-	handler := httptransport.NewServer(
-		func(context.Context, interface{}) (interface{}, error) { return noContentResponse{}, nil },
-		func(context.Context, *http.Request) (interface{}, error) { return struct{}{}, nil },
-		httptransport.EncodeJSONResponse,
-	)
-
-	server := httptest.NewServer(handler)
-	defer server.Close()
-
-	resp, err := http.Get(server.URL)
-	if err != nil {
-		t.Fatal(err)
+func TestEncodeNoBody(t *testing.T) {
+	testCases := []int{
+		http.StatusNoContent,
+		http.StatusNotModified,
 	}
-	if want, have := http.StatusNoContent, resp.StatusCode; want != have {
-		t.Errorf("StatusCode: want %d, have %d", want, have)
-	}
-	buf, _ := ioutil.ReadAll(resp.Body)
-	if want, have := 0, len(buf); want != have {
-		t.Errorf("Body: want no content, have %d bytes", have)
+	for _, code := range testCases {
+		t.Run(fmt.Sprint(code), func(t *testing.T) {
+			handler := httptransport.NewServer(
+				func(context.Context, interface{}) (interface{}, error) { return noBodyResponse{code}, nil },
+				func(context.Context, *http.Request) (interface{}, error) { return struct{}{}, nil },
+				httptransport.EncodeJSONResponse,
+			)
+
+			server := httptest.NewServer(handler)
+			defer server.Close()
+
+			resp, err := http.Get(server.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if want, have := code, resp.StatusCode; want != have {
+				t.Errorf("StatusCode: want %d, have %d", want, have)
+			}
+			buf, _ := ioutil.ReadAll(resp.Body)
+			if want, have := 0, len(buf); want != have {
+				t.Errorf("Body: want no content, have %d bytes", have)
+			}
+		})
 	}
 }
 

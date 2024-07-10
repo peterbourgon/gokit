@@ -159,7 +159,8 @@ func NopRequestDecoder(ctx context.Context, r *http.Request) (interface{}, error
 // JSON object to the ResponseWriter. Many JSON-over-HTTP services can use it as
 // a sensible default. If the response implements Headerer, the provided headers
 // will be applied to the response. If the response implements StatusCoder, the
-// provided StatusCode will be used instead of 200.
+// provided StatusCode will be used instead of 200. If the StatusCode is between 100-199,
+// or equal to 204 or 304, the response body will not be written.
 func EncodeJSONResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	if headerer, ok := response.(Headerer); ok {
@@ -174,10 +175,17 @@ func EncodeJSONResponse(_ context.Context, w http.ResponseWriter, response inter
 		code = sc.StatusCode()
 	}
 	w.WriteHeader(code)
-	if code == http.StatusNoContent {
+
+	switch {
+	case code >= 100 && code <= 199:
 		return nil
+	case code == http.StatusNoContent:
+		return nil
+	case code == http.StatusNotModified:
+		return nil
+	default:
+		return json.NewEncoder(w).Encode(response)
 	}
-	return json.NewEncoder(w).Encode(response)
 }
 
 // DefaultErrorEncoder writes the error to the ResponseWriter, by default a
