@@ -2,6 +2,7 @@ package cloudwatch2
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -135,5 +136,19 @@ func TestSend(t *testing.T) {
 		if *datum.StatisticValues.SampleCount != 3.0 {
 			t.Errorf("expected 3.0 for SampleCount in %v\n", datum)
 		}
+	}
+}
+
+func TestCounterLabelValues(t *testing.T) {
+	c1 := (&Counter{}).With("a", "1", "b", "2", "c", "3", "d", "4")
+	c2 := c1.With("e", "5").(*Counter)
+	c3 := c2.With("f", "6", "g", "7").(*Counter)
+	c4 := c2.With("h", "8").(*Counter)
+
+	if fmt.Sprintf("%v", c3.lvs) != "[a 1 b 2 c 3 d 4 e 5 f 6 g 7]" {
+		t.Errorf("expected label values a-g; got %v\n", c3.lvs)
+	}
+	if fmt.Sprintf("%v", c4.lvs) != "[a 1 b 2 c 3 d 4 e 5 h 8]" {
+		t.Errorf("expected label values a-e,h; got %v\n", c4.lvs)
 	}
 }
