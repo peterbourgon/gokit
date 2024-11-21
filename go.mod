@@ -11,18 +11,18 @@ require (
 	github.com/casbin/casbin/v2 v2.37.0
 	github.com/go-kit/log v0.2.0
 	github.com/go-zookeeper/zk v1.0.2
-	github.com/golang-jwt/jwt/v4 v4.0.0
+	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/hashicorp/consul/api v1.14.0
 	github.com/hudl/fargo v1.4.0
 	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
-	github.com/nats-io/nats-server/v2 v2.8.4
+	github.com/nats-io/nats-server/v2 v2.9.23
 	github.com/nats-io/nats.go v1.15.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/openzipkin/zipkin-go v0.2.5
 	github.com/performancecopilot/speed/v4 v4.0.0
 	github.com/prometheus/client_golang v1.11.1
 	github.com/rabbitmq/amqp091-go v1.2.0
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.8.3
 	github.com/sony/gobreaker v0.4.1
 	github.com/streadway/handy v0.0.0-20200128134331-0f66f006fb2e
 	go.etcd.io/etcd/client/pkg/v3 v3.5.0
