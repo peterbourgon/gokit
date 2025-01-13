@@ -23,3 +23,11 @@ type Histogram interface {
 	With(labelValues ...string) Histogram
 	Observe(value float64)
 }
+
+// A Summary captures individual observations from an event or sample stream and
+// summarizes them in a manner similar to traditional summary statistics: 1. sum
+// of observations, 2. observation count, 3. rank estimations.
+type Summary interface {
+	With(labelValues ...string) Summary
+	Observe(value float64)
+}
